@@ -14,11 +14,10 @@ fn main() {
 }
 
 fn solve(mut cache: &mut HashMap<u64, u64>, n: u64) -> u64 {
-    if cache.contains_key(&n) {
-        *cache.get(&n).unwrap()
-    } else if n == 0 {
-        cache.insert(0, 1);
+    if n == 0 {
         1
+    } else if cache.contains_key(&n) {
+        *cache.get(&n).unwrap()
     } else {
         let numbers = reverse_iter(SecondarySequenceGenerator::new(n));
         let mut sign: u8 = ((numbers.len() - 1) % 4) as u8;
