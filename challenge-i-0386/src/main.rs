@@ -11,6 +11,8 @@ fn main() {
     println!("{}", solve(&mut cache, 5));
     println!("{}", solve(&mut cache, 6));
     println!("{}", solve(&mut cache, 66));
+    println!("{}", solve(&mut cache, 333));
+    println!("{}", solve(&mut cache, 410)); // largest value before overflow
 }
 
 fn solve(mut cache: &mut HashMap<u64, u64>, n: u64) -> u64 {
@@ -30,6 +32,10 @@ fn solve(mut cache: &mut HashMap<u64, u64>, n: u64) -> u64 {
                 pos += next;
             } else {
                 neg += next;
+            }
+            if pos > neg {
+                pos -= neg;
+                neg = 0;
             }
             sign = (sign + 3) % 4;
         }
