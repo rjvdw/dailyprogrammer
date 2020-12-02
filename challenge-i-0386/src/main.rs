@@ -1,4 +1,8 @@
+mod base_sequence_generator;
+mod secondary_sequence_generator;
+
 use std::collections::HashMap;
+use secondary_sequence_generator::SecondarySequenceGenerator;
 
 fn main() {
     let mut cache: HashMap<u64, u64> = HashMap::new();
@@ -23,24 +27,24 @@ fn solve(mut cache: &mut HashMap<u64, u64>, n: u64) -> u64 {
     } else {
         let numbers = reverse_iter(SecondarySequenceGenerator::new(n));
         let mut sign: u8 = ((numbers.len() - 1) % 4) as u8;
-        let mut pos: u64 = 0;
-        let mut neg: u64 = 0;
+        let mut values_to_add: u64 = 0;
+        let mut values_to_subtract: u64 = 0;
 
         for i in numbers {
             let next = solve(&mut cache, n - i);
             if sign < 2 {
-                pos += next;
+                values_to_add += next;
             } else {
-                neg += next;
+                values_to_subtract += next;
             }
-            if pos > neg {
-                pos -= neg;
-                neg = 0;
+            if values_to_add > values_to_subtract {
+                values_to_add -= values_to_subtract;
+                values_to_subtract = 0;
             }
             sign = (sign + 3) % 4;
         }
 
-        let result = pos - neg;
+        let result = values_to_add - values_to_subtract;
         cache.insert(n, result);
         result
     }
@@ -51,57 +55,4 @@ fn reverse_iter(iterator: SecondarySequenceGenerator) -> Vec<u64> {
     numbers.extend(iterator);
     numbers.reverse();
     numbers
-}
-
-struct SecondarySequenceGenerator {
-    i: u64,
-    s: BaseSequenceGenerator,
-    u: u64,
-}
-
-impl SecondarySequenceGenerator {
-    fn new(u: u64) -> SecondarySequenceGenerator {
-        SecondarySequenceGenerator { i: 1, s: BaseSequenceGenerator::new(), u }
-    }
-}
-
-impl Iterator for SecondarySequenceGenerator {
-    type Item = u64;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.i <= self.u {
-            let i = self.i;
-            self.i += self.s.next().unwrap();
-            Some(i)
-        } else {
-            None
-        }
-    }
-}
-
-struct BaseSequenceGenerator {
-    s1: u64,
-    s2: u64,
-    b: bool,
-}
-
-impl BaseSequenceGenerator {
-    fn new() -> BaseSequenceGenerator {
-        BaseSequenceGenerator { s1: 0, s2: 1, b: false }
-    }
-}
-
-impl Iterator for BaseSequenceGenerator {
-    type Item = u64;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.b = !self.b;
-        if self.b {
-            self.s1 += 1;
-            Some(self.s1)
-        } else {
-            self.s2 += 2;
-            Some(self.s2)
-        }
-    }
 }
